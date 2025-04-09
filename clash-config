@@ -1,0 +1,54 @@
+mixed-port: 7890
+allow-lan: true
+mode: rule
+log-level: info
+ipv6: false
+external-controller: 0.0.0.0:9090
+
+proxies:
+
+proxy-groups:
+  - name: 🚀 节点选择
+    type: select
+    proxies:
+      - ♻️ 自动选择
+      - 🌍 全球直连
+      - 🛑 广告拦截
+      - 🐟 漏网之鱼
+
+  - name: ♻️ 自动选择
+    type: url-test
+    proxies: []
+    url: http://cp.cloudflare.com/generate_204
+    interval: 300
+
+  - name: 🌍 全球直连
+    type: select
+    proxies:
+      - DIRECT
+
+  - name: 🛑 广告拦截
+    type: select
+    proxies:
+      - REJECT
+      - DIRECT
+
+  - name: 🐟 漏网之鱼
+    type: select
+    proxies:
+      - ♻️ 自动选择
+      - DIRECT
+
+rules:
+  - DOMAIN-SUFFIX,local,DIRECT
+  - DOMAIN-KEYWORD,tracker,🛑 广告拦截
+  - DOMAIN-SUFFIX,google.com,🚀 节点选择
+  - DOMAIN-SUFFIX,facebook.com,🚀 节点选择
+  - GEOIP,CN,🌍 全球直连
+  - MATCH,🐟 漏网之鱼
+
+tun:
+  enable: true
+  stack: system
+  dns-hijack:
+    - any:53
